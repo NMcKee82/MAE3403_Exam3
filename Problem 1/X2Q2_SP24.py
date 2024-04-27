@@ -23,8 +23,8 @@ def odeSystem(t,X, *args):
     #calculate the current input voltage
     vt=fn(t)
     #calculate derivatives for the state variables
-    i1dot=#$JES MISSING CODE
-    i2dot=#$JES MISSING CODE
+    i1dot = (vt - R*i1 - i2/C) / L
+    i2dot = i1
     return [i1dot, i2dot]
 
 def simulate(L=20, R=20,C=0.05, A=20, f=20, p=0, t=10, pts=500):
