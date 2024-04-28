@@ -1,45 +1,65 @@
 <Circuit>
     <node>
         name: nodeStart
-        position: 0,0
+        position: -40,10
+        draw: true
+    </node>
+    <node>
+        name: CornerTL
+        position: -40,20
         draw: true
     </node>
     <node>
         name: nodeBetweenLR
-        position: 20,0
+        position: 0,20
+        draw: true
+    </node>
+    <node>
+        name: CornerTR
+        position: 40,20
+        draw: true
+    </node>
+     <node>
+        name: CornerBR
+        position: 40,-20
+        draw: true
+    </node>
+    <node>
+        name: CornerBL
+        position: -40,-20
         draw: true
     </node>
     <node>
         name: nodeBetweenRC
-        position: 40,0
+        position: 0,-20
         draw: true
     </node>
     <node>
         name: nodeEnd
-        position: 60,0
+        position: -40,-10
         draw: true
     </node>
     <voltageSource>
         name: V1
-        node1Name: nodeStart
-        node2Name: nodeBetweenLR
+        node1: nodeStart
+        node2: nodeEnd
     </voltageSource>
     <inductor>
         name: L1
         L: 20
-        node1Name: nodeBetweenLR
-        node2Name: nodeBetweenRC
+        node1: CornerTL
+        node2: nodeBetweenLR
     </inductor>
     <resistor>
         name: R1
         R: 10
-        node1Name: nodeBetweenRC
-        node2Name: nodeEnd
+        node1: nodeBetweenLR
+        node2: nodeBetweenRC
     </resistor>
     <capacitor>
         name: C1
         C: 0.05
-        node1Name: nodeEnd
-        node2Name: nodeStart
+        node1: CornerTR
+        node2: CornerBR
     </capacitor>
 </Circuit>
