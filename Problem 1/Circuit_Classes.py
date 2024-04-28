@@ -31,7 +31,7 @@ class circuitView():
     def setDisplayWidgets(self, dw=None):
         if dw is not None:
             pass
-            #$JES MISSING CODE$ unpack widgets appropriately = dw
+            self.layout_VertInput, self.layout_VertMain, self.form = dw #unpack widgets appropriately = dw
 
     def setupImageLabel(self):
         """
@@ -39,9 +39,9 @@ class circuitView():
         :return:
         """
         #region setup a label to display the image of the circuit
-        self.pixMap = #$JES MISSING CODE #  instantiate a QPixmap object from qtg (see imports)
+        self.pixMap = qtg.QPixmap()  # instantiate a QPixmap object from qtg (see imports)
         self.pixMap.load("Circuit1.png")
-        self.image_label = #$JES MISSING CODE #  instantiate a QLabel object from qtw (see imports)
+        self.image_label = qtw.QLabel()  # instantiate a QLabel object from qtw (see imports)
         self.image_label.setPixmap(self.pixMap)
         self.layout_VertInput.addWidget(self.image_label)
         #endregion
@@ -72,7 +72,7 @@ class circuitController():
         self.inputWidgets, self.displayWidgets = args
 
         #unpack the input widgets
-        #$JES MISSING CODE# unpack widgets appropriately =s elf.inputWidgets
+        self.line_edit_L, self.line_edit_R, self.line_edit_C, self.line_edit_A, self.line_edit_f, self.line_edit_p, self.line_edit_t, self.line_edit_pts = self.inputWidgets# unpack widgets appropriately =s elf.inputWidgets
 
         self.Model = circuitModel()
         self.View = circuitView(dw=self.displayWidgets)
@@ -85,16 +85,16 @@ class circuitController():
         Step 3:  call doPlot from import.
         :return:
         """
-        L= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        R= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        C= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        A= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        f= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        p= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        t= #$JES MISSING CODE # read from line edit objects and convert to floating point number
-        pts = #$JES MISSING CODE # read from line edit objects and convert to floating point number
+        L = float(self.line_edit_L.text())  # read from line edit objects and convert to floating point number
+        R = float(self.line_edit_R.text())  # read from line edit objects and convert to floating point number
+        C = float(self.line_edit_C.text())  # read from line edit objects and convert to floating point number
+        A = float(self.line_edit_A.text())  # read from line edit objects and convert to floating point number
+        f = float(self.line_edit_f.text())  # read from line edit objects and convert to floating point number
+        p = float(self.line_edit_p.text())  # read from line edit objects and convert to floating point number
+        t = float(self.line_edit_t.text())  # read from line edit objects and convert to floating point number
+        pts = float(self.line_edit_pts.text())  # read from line edit objects and convert to floating point number
 
-        I=# $JES MISSING CODE call simulate # see import from X2Q2_SP24
+        I = simulate(L=L, R=R, C=C, A=A, f=f, p=p, t=t, pts=pts)  # call simulate
         self.View.doPlot((R,I.t, I))
 
 #endregion
