@@ -38,8 +38,8 @@ class MainWindow(qtw.QWidget, Ui_Form):
         # End main ui code
 
         #create otto and diesel controller objects to work with later
-        self.otto = #$JES MISSING CODE  # instantiate an ottoCycleController object
-        self.diesel = #$JES MISSING CODE # instantiate a dieselCycleController object
+        self.otto = ottoCycleController()  # instantiate an ottoCycleController object
+        self.diesel = dieselCycleController() # instantiate a dieselCycleController object
         self.controller=self.otto
         self.someWidgets=[]
 
@@ -84,9 +84,9 @@ class MainWindow(qtw.QWidget, Ui_Form):
         self.controller.updateView()
 
     def selectCycle(self):
-        otto = #$JES MISSING CODE # determine if otto cycle is chosen (true) or not (false -> diesel cycle)
+        otto = self.cmb_OttoDiesel.currentText() == 'Otto' # determine if otto cycle is chosen (true) or not (false -> diesel cycle)
         self.gb_Input.setTitle('Input for Air Standard {} Cycle:'.format('Otto' if otto else 'Diesel'))
-        self.controller= #$JES MISSING CODE  # set self.controller to self.otto or self.diesel
+        self.controller= self.otto if otto else self.diesel  # set self.controller to self.otto or self.diesel
         self.controller.updateView()
 
     def setUnits(self):
@@ -98,7 +98,7 @@ class MainWindow(qtw.QWidget, Ui_Form):
         :return: nothing
         '''
         #calculate the cycle efficiency (and states 1,2,3,4)
-        #$JES MISSING CODE call the calc function of the controller
+        self.controller.calc() # Call the calc function of the controller
         pass
 
 #if this module is being imported, this won't run. If it is the main module, it will run.
