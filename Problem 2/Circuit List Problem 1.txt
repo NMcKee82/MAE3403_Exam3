@@ -1,0 +1,45 @@
+<Circuit>
+    <node>
+        name: nodeStart
+        position: 0,0
+        draw: true
+    </node>
+    <node>
+        name: nodeBetweenLR
+        position: 20,0
+        draw: true
+    </node>
+    <node>
+        name: nodeBetweenRC
+        position: 40,0
+        draw: true
+    </node>
+    <node>
+        name: nodeEnd
+        position: 60,0
+        draw: true
+    </node>
+    <voltageSource>
+        name: V1
+        node1Name: nodeStart
+        node2Name: nodeBetweenLR
+    </voltageSource>
+    <inductor>
+        name: L1
+        L: 20
+        node1Name: nodeBetweenLR
+        node2Name: nodeBetweenRC
+    </inductor>
+    <resistor>
+        name: R1
+        R: 10
+        node1Name: nodeBetweenRC
+        node2Name: nodeEnd
+    </resistor>
+    <capacitor>
+        name: C1
+        C: 0.05
+        node1Name: nodeEnd
+        node2Name: nodeStart
+    </capacitor>
+</Circuit>

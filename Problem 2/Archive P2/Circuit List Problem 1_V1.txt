@@ -1,0 +1,48 @@
+<Circuit>
+    <VoltageSource>
+        name: V1
+        magnitude: 20
+        frequency: 20
+        phase: 0
+        node1Name: nodeStart
+        node2Name: nodeBetweenLR
+    </VoltageSource>
+    <Inductor>
+        name: L1
+        inductance: 20
+        node1Name: nodeBetweenLR
+        node2Name: nodeBetweenRC
+    </Inductor>
+    <Resistor>
+        name: R1
+        resistance: 10
+        node1Name: nodeBetweenRC
+        node2Name: nodeEnd
+    </Resistor>
+    <Capacitor>
+        name: C1
+        capacitance: 0.05
+        node1Name: nodeEnd
+        node2Name: nodeStart
+    </Capacitor>
+    <Node>
+        name: nodeStart
+        position: 0, 0
+        draw: true
+    </Node>
+    <Node>
+        name: nodeBetweenLR
+        position: 20, 0
+        draw: true
+    </Node>
+    <Node>
+        name: nodeBetweenRC
+        position: 40, 0
+        draw: true
+    </Node>
+    <Node>
+        name: nodeEnd
+        position: 60, 0
+        draw: true
+    </Node>
+</Circuit>

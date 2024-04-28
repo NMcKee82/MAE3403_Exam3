@@ -21,7 +21,7 @@ class main_window(Ui_Form, QWidget):
         self.inputWidgets = (self.spnd_Zoom)
 
         self.Controller=circuitController((self.displayWidgets, self.inputWidgets))
-        self.setWindowTitle("Circuit Sketch by Jim Smay (21 April, 2022)")
+        self.setWindowTitle("Circuit Sketch MAE3403 Exam III (29 April, 2024)")
         self.spnd_Zoom.valueChanged.connect(self.Controller.setZoom)
         self.pb_Open.clicked.connect(self.Controller.openFile)
 
