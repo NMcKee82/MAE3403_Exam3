@@ -1,25 +1,42 @@
-#region imports
-from X2Q2_SP24 import doPlot,simulate
-from PyQt5 import QtWidgets as qtw
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
-from abc import ABC, abstractmethod
-#these imports are necessary for drawing a matplot lib graph on my GUI
-#no simple widget for this exists in QT Designer, so I have to add the widget in code.
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
+from PyQt5 import QtWidgets, QtGui, QtCore
+from scipy.integrate import solve_ivp
+import numpy as np
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-#endregion
+import sys
 
-#region RLC circuit classes (MVC)
+# Import your Ui_MainForm class from P1_GUI
+from P1_GUI import Ui_MainForm
+
+
 class circuitModel():
     def __init__(self):
-        self.nodes=[]
-        self.resistors=[]
-        self.capacitors=[]
-        self.inductors=[]
-        self.voltageSources=[]
-        self.wires=[]
+        self.nodes = []
+        self.resistors = []
+        self.capacitors = []
+        self.inductors = []
+        self.voltageSources = []
+        self.wires = []
+
+    def simulate(self, L, R, C, A, f, p, t, pts):
+        def rlc_circuit(t, y):
+            V = A * np.sin(2 * np.pi * f * t + p)  # Sinusoidal input
+            iL, iR, vC = y  # Unpack the state vector
+            diLdt = (V - R * iR - vC) / L  # Inductor current derivative
+            diRdt = (vC / R) - iR  # Resistor current derivative (i2)
+            dvCdt = iR / C  # Capacitor voltage derivative
+            return [diLdt, diRdt, dvCdt]
+
+        # Initial conditions: iL(0) = 0, iR(0) = 0, vC(0) = 0
+        y0 = [0, 0, 0]
+        t_span = (0, t)
+        t_eval = np.linspace(0, t, int(pts))
+
+        sol = solve_ivp(rlc_circuit, t_span, y0, t_eval=t_eval)
+
+        return sol.t, sol.y
+
 
 class circuitView():
     def __init__(self, dw=None):
@@ -30,71 +47,82 @@ class circuitView():
 
     def setDisplayWidgets(self, dw=None):
         if dw is not None:
-            pass
-            self.layout_VertInput, self.layout_VertMain, self.form = dw #unpack widgets appropriately = dw
+            self.layout_VertInput, self.layout_VertMain, self.form = dw
 
     def setupImageLabel(self):
-        """
-        Displays picture of circuit from Circuit1.png in a label widget
-        :return:
-        """
-        #region setup a label to display the image of the circuit
-        self.pixMap = qtg.QPixmap()  # instantiate a QPixmap object from qtg (see imports)
-        self.pixMap.load("Circuit1.png")
-        self.image_label = qtw.QLabel()  # instantiate a QLabel object from qtw (see imports)
+        self.pixMap = QtGui.QPixmap("Circuit1.png")
+        self.image_label = QtWidgets.QLabel()
         self.image_label.setPixmap(self.pixMap)
         self.layout_VertInput.addWidget(self.image_label)
-        #endregion
 
     def setupPlot(self):
-        """
-        Create the figure, canvas, axes and toolbar objects and place them on GUI
-        :return:
-        """
-        self.figure = Figure(figsize=(8, 8), tight_layout=True, frameon=True, facecolor='none')
-        self.canvas = FigureCanvasQTAgg(self.figure)
-        self.ax = self.figure.add_subplot()
-        self.toolbar=NavigationToolbar2QT(self.canvas, self.form)
+        self.figure = Figure(figsize=(8, 8), tight_layout=True)
+        self.canvas = FigureCanvas(self.figure)
+        self.ax = self.figure.add_subplot(111)
+        self.toolbar = NavigationToolbar(self.canvas, self.form)
         self.layout_VertMain.addWidget(self.toolbar)
         self.layout_VertMain.addWidget(self.canvas)
 
-    def doPlot(self, args):
-        self.canvas.figure.clear()
-        self.ax = self.figure.add_subplot()
-        doPlot(args, ax = self.ax)
+    def doPlot(self, simulation_results):
+        t, y = simulation_results
+        self.ax.clear()
+        self.ax.plot(t, y[0], label='i1 (Inductor Current)')
+        self.ax.plot(t, y[1], label='i2 (Resistor Current)')
+        self.ax.plot(t, y[2], label='Vc (Capacitor Voltage)')
+        self.ax.set_title('RLC Circuit Transient Response')
+        self.ax.set_xlabel('Time (s)')
+        self.ax.set_ylabel('Current (A) / Voltage (V)')
+        self.ax.legend()
         self.canvas.draw()
+
+
 class circuitController():
     def __init__(self, args):
-        """
-        This is the class for a circuitContorller.  It has a model and view for the circuit.
-        :param args: a tuple with input widgets and display widgets
-        """
         self.inputWidgets, self.displayWidgets = args
-
-        #unpack the input widgets
-        self.line_edit_L, self.line_edit_R, self.line_edit_C, self.line_edit_A, self.line_edit_f, self.line_edit_p, self.line_edit_t, self.line_edit_pts = self.inputWidgets# unpack widgets appropriately =s elf.inputWidgets
-
+        self.line_edit_L, self.line_edit_R, self.line_edit_C, self.line_edit_A, self.line_edit_f, self.line_edit_p, self.line_edit_t, self.line_edit_pts = self.inputWidgets
         self.Model = circuitModel()
         self.View = circuitView(dw=self.displayWidgets)
 
     def calculate(self):
-        """
-        Simulates the circuit by calling from X2Q1_SP22 functions.
-        Step 1:  read inputs from GUI and clear figure.
-        Step 2:  call simulate from import.
-        Step 3:  call doPlot from import.
-        :return:
-        """
-        L = float(self.line_edit_L.text())  # read from line edit objects and convert to floating point number
-        R = float(self.line_edit_R.text())  # read from line edit objects and convert to floating point number
-        C = float(self.line_edit_C.text())  # read from line edit objects and convert to floating point number
-        A = float(self.line_edit_A.text())  # read from line edit objects and convert to floating point number
-        f = float(self.line_edit_f.text())  # read from line edit objects and convert to floating point number
-        p = float(self.line_edit_p.text())  # read from line edit objects and convert to floating point number
-        t = float(self.line_edit_t.text())  # read from line edit objects and convert to floating point number
-        pts = float(self.line_edit_pts.text())  # read from line edit objects and convert to floating point number
+        L = float(self.line_edit_L.text())
+        R = float(self.line_edit_R.text())
+        C = float(self.line_edit_C.text())
+        A = float(self.line_edit_A.text())
+        f = float(self.line_edit_f.text())
+        p = float(self.line_edit_p.text())
+        t = float(self.line_edit_t.text())
+        pts = float(self.line_edit_pts.text())
 
-        I = simulate(L=L, R=R, C=C, A=A, f=f, p=p, t=t, pts=pts)  # call simulate
-        self.View.doPlot((R,I.t, I))
+        simulation_results = self.Model.simulate(L, R, C, A, f, p, t, pts)
+        self.View.doPlot(simulation_results)
 
-#endregion
+
+class MainApplication(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_MainForm()
+        self.ui.setupUi(self)
+        self.controller = circuitController(self.get_input_widgets())
+        self.setup_connections()
+
+    def get_input_widgets(self):
+        inputWidgets = (
+            self.ui.le_Inductance, self.ui.le_Resistance, self.ui.le_Capacitence,
+            self.ui.le_Amplitude, self.ui.le_Freq, self.ui.le_Phase,
+            self.ui.le_simTime, self.ui.le_simPts
+        )
+        displayWidgets = (self.ui.layout_VertInput, self.ui.layout_VertMain, self)
+        return inputWidgets, displayWidgets
+
+    def setup_connections(self):
+        self.ui.pb_Calculate.clicked.connect(self.calculate)
+
+    def calculate(self):
+        self.controller.calculate()
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    mainForm = MainApplication()
+    mainForm.show()
+    sys.exit(app.exec_())

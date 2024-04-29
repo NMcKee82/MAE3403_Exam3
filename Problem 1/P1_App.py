@@ -23,7 +23,7 @@ class main_window(Ui_MainForm, QWidget):
         super().__init__()
         self.setupUi(self)
         # you should modify the window title appropriately
-        #self.setWindowTitle("Circuit Simulator by Jim Smay (21 April, 2022)")
+        self.setWindowTitle("Circuit Simulator by Noah McKee (29 April, 2024)")
 
         self.inputWidgets = (self.le_Inductance, self.le_Resistance, self.le_Capacitence, self.le_Amplitude, self.le_Freq, self.le_Phase, self.le_simTime, self.le_simPts)
         self.displayWidgets = (self.layout_VertMain, self.layout_VertInput, self)

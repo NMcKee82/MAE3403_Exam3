@@ -28,7 +28,7 @@ class Ui_Form(object):
 
         self.spnd_Zoom = QtWidgets.QDoubleSpinBox(Form)
         self.spnd_Zoom.setSingleStep(0.1)
-        self.spnd_Zoom.setProperty("value", 1.0)
+        self.spnd_Zoom.setProperty("value", 3.0)
         self.spnd_Zoom.setObjectName("spnd_Zoom")
         self.horizontalLayout.addWidget(self.spnd_Zoom)
 
